@@ -1,7 +1,7 @@
 import type { InjectionKey } from 'vue'
 import { createStore, Store, useStore as baseUseStore } from 'vuex'
 
-import { fetchBooks, sortBooksByCategory } from '../static/books'
+import { fetchBook, fetchBooks, sortBooksByCategory } from '../static/books'
 
 const relevance = 'relevance'
 const newest = 'newest'
@@ -73,6 +73,15 @@ const store = createStore<State>({
       state.books = books
     },
 
+    setBook (state, book: BookType) {
+      const books = {
+        totalItems: 1,
+        items: [book]
+      }
+
+      state.books = books
+    },
+
     setIsLoading (state, isLoading: boolean) {
       state.isLoading = isLoading
     },
@@ -80,7 +89,7 @@ const store = createStore<State>({
     setCategory (state, category: string) {
       state.category = category
 
-      if (state.books) state.books.items.sort((a, b) => sortBooksByCategory(a, b, category))
+      if (state.books) state.books.items?.sort((a, b) => sortBooksByCategory(a, b, category))
     },
     
     setCategories (state, categories: string[]) {
@@ -107,6 +116,18 @@ const store = createStore<State>({
         if (books.totalItems > 0) {
           commit('setBooks', books)
           commit('setSearchText', params.searchText)
+        }
+      })
+
+      commit('setIsLoading', false)
+    },
+
+    async fetchBook ({ state, commit }, id: string) {
+      commit('setIsLoading', true)
+
+      await fetchBook(id).then((book: BookType) => {
+        if (book.id) {
+          commit('setBook', book)
         }
       })
 

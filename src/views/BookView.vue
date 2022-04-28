@@ -8,53 +8,29 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
+const isLoading = computed<boolean>(() => store.getters.getIsLoading)
 const books = computed<BooksDataType>(() => store.getters.getBooks)
+const { id } = route.params
 
-if (books.value === null) {
-  router.push({ path: '/' })
+if (!books.value) {
+  await store.dispatch('fetchBook', id)
 }
 
-const book = books.value?.items?.find(book => book.id === route.params.id)
+const [book] = books.value.items.filter(book => book.id === id)
 
-let bookTitle: string
-let bookSubtitle: string
-let bookAuthors: string[]
-let imageSrc: string
-let bookPublisher: string
-let bookPublishedDate: string
-let bookDescription: string
-let bookLanguage: string
-let bookPreviewLink: string
-let bookRating: number
-let bookCategroies: string[]
-
-if (book) {
-  const {
-    title,
-    subtitle,
-    authors,
-    imageLinks,
-    publisher,
-    publishedDate,
-    description,
-    language,
-    previewLink,
-    averageRating,
-    categories
-  } = book.volumeInfo
-
-  bookTitle = title
-  bookSubtitle = subtitle
-  bookAuthors = authors
-  imageSrc = imageLinks?.thumbnail
-  bookPublisher = publisher
-  bookPublishedDate = publishedDate
-  bookDescription = description
-  bookLanguage = language
-  bookPreviewLink = previewLink
-  bookRating = averageRating
-  bookCategroies = categories
-}
+const {
+  title,
+  subtitle,
+  authors,
+  imageLinks,
+  publisher,
+  publishedDate,
+  description,
+  language,
+  previewLink,
+  averageRating,
+  categories
+} = book.volumeInfo
 
 </script>
 
@@ -62,23 +38,23 @@ if (book) {
   <main>
     <div class="app-wrapper">
       <button @click="router.back" class="return-button">Back</button>
-      <div class="book">
-        <img v-if="imageSrc" :src="imageSrc">
+      <div v-if="books != null" class="book">
+        <img v-if="imageLinks?.thumbnail" :src="imageLinks.thumbnail">
         <div class="book__info">
-          <h2>{{bookTitle}}</h2>
-          <p>{{bookSubtitle}}</p>
-          <p v-if="bookCategroies">Genre:<span v-for="(category, index) in bookCategroies">{{index == bookCategroies.length - 1 ? ` ${category}.` : ` ${category},`}}</span></p>
-          <p v-if="bookAuthors">Authors:<span v-for="(author, index) in bookAuthors">{{index == bookAuthors.length - 1 ? ` ${author}.` : ` ${author},`}}</span></p>
-          <p>Publisher: {{bookPublisher}}</p>
-          <p v-if="bookPublishedDate">Published date: {{bookPublishedDate}}</p>
-          <p>Language: {{bookLanguage}}</p>
-          <p v-if="bookRating">Average rating: {{bookRating}}</p>
-          <a :href="bookPreviewLink">See preview</a>
+          <h2>{{title}}</h2>
+          <p>{{subtitle}}</p>
+          <p v-if="categories">Genre:<span v-for="(category, index) in categories">{{index == categories.length - 1 ? ` ${category}.` : ` ${category},`}}</span></p>
+          <p v-if="authors">Authors:<span v-for="(author, index) in authors">{{index == authors.length - 1 ? ` ${author}.` : ` ${author},`}}</span></p>
+          <p>Publisher: {{publisher}}</p>
+          <p v-if="publishedDate">Published date: {{publishedDate}}</p>
+          <p>Language: {{language}}</p>
+          <p v-if="averageRating">Average rating: {{averageRating}}</p>
+          <a :href="previewLink" target="blank">See preview</a>
         </div>
       </div>
-      <div class="book__desription" v-if="bookDescription">
+      <div class="book__desription" v-if="description">
           <h3>Desription:</h3>
-          <p>{{bookDescription}}</p>
+          <p>{{description}}</p>
       </div>
     </div>
   </main>

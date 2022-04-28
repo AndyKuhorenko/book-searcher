@@ -20,7 +20,7 @@ function handleClick(index: number) {
 <template >
   <Paginate
     v-model="page"
-    :page-count="Math.ceil(books.totalItems / 40)"
+    :page-count="Math.floor(books.totalItems / 40)"
     :page-range="3"
     :margin-pages="2"
     :click-handler="handleClick"
@@ -42,8 +42,10 @@ function handleClick(index: number) {
 
 .page-item {
   cursor: pointer;
-  padding: 10px;
 
+  a {
+    padding: 10px;
+  }
   &.active {
     a {
       text-decoration: underline;

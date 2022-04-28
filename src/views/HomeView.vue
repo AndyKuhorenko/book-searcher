@@ -4,6 +4,7 @@ import { computed } from '@vue/reactivity'
 import { useStore, type BooksDataType, type BookType } from '../store/store'
 import BookCard from '../components/BookCard.vue'
 import Pagination from '../components/Pagination.vue'
+import FadeTransition from '../components/FadeTransition.vue'
 
 const store = useStore()
 
@@ -34,7 +35,7 @@ function createCategories() {
 
   newCategories.add('All')
 
-  books.value.items.forEach(book => book.volumeInfo.categories?.forEach(category => newCategories.add(category)))
+  books.value.items?.forEach(book => book.volumeInfo.categories?.forEach(category => newCategories.add(category)))
 
   store.dispatch('setCategories', Array.from(newCategories))
 
@@ -78,15 +79,17 @@ function handleSortChange(e: Event) {
             <option value="newest">Newest</option>
           </select>
         </div>
+        <div v-if="books != null && !isLoading" class="home__total">
+          <p>Found {{books.totalItems}} results</p>
+        </div>
       </div>
-      <div v-if="isLoading" class="home__loader">Loading...</div>
-      <div v-if="books != null && !isLoading" class="home__total">
-        <p>Found {{books.totalItems}} results</p>
-      </div>
-      <div v-if="books != null && !isLoading" class="cards-wrapper">
-        <BookCard v-for="book in books.items" v-bind="book" :key="book.id"/>
-      </div>
-      <Pagination v-if="books && !isLoading" @changePage="fetchBooks"/>
+      <Loader v-if="isLoading" />
+      <FadeTransition>
+        <div v-if="books != null && !isLoading" class="cards-wrapper">
+          <BookCard v-for="book in books.items" v-bind="book" :key="book.id"/>
+        </div>
+      </FadeTransition>
+      <Pagination v-if="books && !isLoading && books.totalItems > 40" @changePage="fetchBooks"/>
     </div>
   </main>
 </template>
@@ -108,14 +111,6 @@ form {
   padding-top: 20px;
 }
 
-.home__loader {
-  padding-top: 30vh;
-  text-align: center;
-  color: hsla(160, 100%, 37%, 1);
-  font-size: 40px;
-  font-weight: 800;
-}
-
 
 .cards-wrapper {
   padding: 40px 0;
@@ -125,6 +120,7 @@ form {
 }
 
 .home__categories {
+  min-height: 100px;
   label {
     padding-right: 10px;
   }
@@ -136,5 +132,7 @@ form {
     }
   }
 }
+
+
 
 </style>

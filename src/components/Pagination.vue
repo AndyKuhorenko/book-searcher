@@ -12,7 +12,7 @@ const page = startIndex.value + 1;
 
 function handleClick(index: number) {
   store.dispatch('setStartIndex', index - 1)
-  emit('changePage');
+  emit('changePage')
 }
 
 </script>

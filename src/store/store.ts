@@ -89,7 +89,7 @@ const store = createStore<State>({
     setCategory (state, category: string) {
       state.category = category
 
-      if (state.books) state.books.items?.sort((a, b) => sortBooksByCategory(a, b, category))
+      if (state.books) state.books.items = state.books.items?.sort((a, b) => sortBooksByCategory(a, b, category))
     },
     
     setCategories (state, categories: string[]) {
@@ -100,11 +100,11 @@ const store = createStore<State>({
       state.sorting = sorting
     },
 
-    setStartIndex(state, startIndex) {
+    setStartIndex(state, startIndex: number) {
       state.startIndex = startIndex
     },
 
-    setSearchText(state, searchText) {
+    setSearchText(state, searchText: string) {
       state.searchText = searchText
     }
   },
@@ -151,31 +151,31 @@ const store = createStore<State>({
     }
   },
   getters: {
-    getBooks (state) {
+    getBooks (state): BooksDataType | null {
       return state.books
     },
 
-    getIsLoading (state) {
+    getIsLoading (state): boolean {
       return state.isLoading
     },
 
-    getCategory (state) {
+    getCategory (state): string {
       return state.category
     },
 
-    getCategories (state) {
+    getCategories (state): string[] {
       return state.categories
     },
 
-    getSorting (state) {
+    getSorting (state): SortingType  {
       return state.sorting
     },
 
-    getStartIndex(state) {
+    getStartIndex(state): number {
       return state.startIndex
     },
 
-    getSearchText(state) {
+    getSearchText(state): string {
       return state.searchText
     }
   }

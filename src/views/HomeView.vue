@@ -5,6 +5,7 @@ import { useStore, type BooksDataType, type BookType } from '../store/store'
 import BookCard from '../components/BookCard.vue'
 import Pagination from '../components/Pagination.vue'
 import FadeTransition from '../components/FadeTransition.vue'
+import Loader from '../components/Loader.vue'
 
 const store = useStore()
 
@@ -14,10 +15,9 @@ const categories = computed<string[]>(() => store.getters.getCategories)
 const currentCategory = computed<string>(() => store.getters.getCategory)
 const currentSorting = computed<string>(() => store.getters.getSorting)
 const startIndex = computed<number>(() => store.getters.getStartIndex)
-const searchText = ref(store.getters.getSearchText)
+const searchText = ref<string>(store.getters.getSearchText)
 
-
-function handleButtonClick() {
+function submitForm() {
   store.dispatch('setStartIndex', 0)
 
   fetchBooks()
@@ -65,7 +65,7 @@ function handleSortChange(e: Event) {
     <div class="app-wrapper">
       <form>
         <input v-model="searchText" placeholder="Enter book title"/>
-        <button type="submit" @click.prevent="handleButtonClick">Search</button>
+        <button type="submit" :disabled="searchText.length <= 0" @click.prevent="submitForm" @keydown.enter="submitForm">Search</button>
       </form>
       <div class="home__categories">
         <label for="categories">Category</label>
@@ -104,6 +104,9 @@ form {
     border-radius:  5px;
     color: white;
     cursor: pointer;
+    &:disabled {
+      background-color: rgba(0, 189, 126, 0.411);
+    }
   }
 }
 
